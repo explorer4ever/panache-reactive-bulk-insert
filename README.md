@@ -12,11 +12,13 @@ The table scripts and the seed data is in `main/resources/db` folder.
 
 This application uses PostgreSQL, one of the supported reactive databases. The database configuration is maintained in a .env file within the root of the project. The below listed keys and values are used and the values can be replaced with any relevant details
 
+```
 DATABASE_HOST=localhost
 DATABASE_PORT=5432
 DATABASE_NAME=demodb
 DATABASE_USER=demouser
 DATABASE_PASSWORD=demopassword
+```
 
 There are 4 tables in this application, A, B, C, and D. A is the parent of B, B is the parent C and C is the parent of D. Each child has a connection to all parents in the ancestry.
 
