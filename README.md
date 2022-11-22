@@ -10,6 +10,14 @@ This application was created with the intent to reproduce an error when using Pa
 
 The table scripts and the seed data is in `main/resources/db` folder.
 
+This application uses PostgreSQL, one of the supported reactive databases. The database configuration is maintained in a .env file within the root of the project. The below listed keys and values are used and the values can be replaced with any relevant details
+
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=demodb
+DATABASE_USER=demouser
+DATABASE_PASSWORD=demopassword
+
 There are 4 tables in this application, A, B, C, and D. A is the parent of B, B is the parent C and C is the parent of D. Each child has a connection to all parents in the ancestry.
 
 Each of these tables is populated with some seed data that is setup for the application.
@@ -19,7 +27,6 @@ There is one api that is used to setup application specific data with POST reque
 Once this API gets called, the application, retrieves the data from each of the tables and inserts starting from tables A all the way to table D.
 
 The error that is currently being produced is
-
 
 ```
 or id: a27354f5-6e08-410a-97a4-98ad8e004885-1: java.lang.NullPointerException
@@ -119,9 +126,6 @@ or id: a27354f5-6e08-410a-97a4-98ad8e004885-1: java.lang.NullPointerException
 	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
 	at java.base/java.lang.Thread.run(Thread.java:829)
 ```
-
-
-
 
 ## Running the application in dev mode
 
