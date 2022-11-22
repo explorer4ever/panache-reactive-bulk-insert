@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Explorer4Ever
+      changes:
+        - createTable:
+            tableName: table_d
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: account_id
+                  type: int
+                  constraints:
+                    nullable: true
+              - column:
+                  name: cid
+                  type: int
+                  constraints:
+                    nullable: false
+                    references: table_c
+                    foreignKeyName: table_d_x_table_c_fkey
+              - column:
+                  name: bid
+                  type: int
+                  constraints:
+                    nullable: false
+                    references: table_b
+                    foreignKeyName: table_d_x_table_b_fkey
+              - column:
+                  name: aid
+                  type: int
+                  constraints:
+                    nullable: false
+                    references: table_a
+                    foreignKeyName: table_d_x_table_a_fkey
+              - column:
+                  name: data
+                  type: nvarchar(100)
+                  constraints:
+                    nullable: true
+        - createIndex:
+            indexName:  idx_account_id_d
+            tableName:  table_d
+            clustered:  true
+            columns:
+              - column:
+                  name:  account_id
+            unique:  false

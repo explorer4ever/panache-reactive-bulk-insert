@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - include:
+      file: db/table_accounts.yml
+  - include:
+      file: db/table_a.yml
+  - include:
+      file: db/table_b.yml
+  - include:
+      file: db/table_c.yml
+  - include:
+      file: db/table_d.yml
+  - include:
+      file: db/a_seed_data.yml
+  - include:
+      file: db/b_seed_data.yml
+  - include:
+      file: db/c_seed_data.yml
+  - include:
+      file: db/d_seed_data.yml

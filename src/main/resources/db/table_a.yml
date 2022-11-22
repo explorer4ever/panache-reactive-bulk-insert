@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Explorer4Ever
+      changes:
+        - createTable:
+            tableName: table_a
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: account_id
+                  type: int
+                  constraints:
+                    nullable: true
+              - column:
+                  name: data
+                  type: nvarchar(100)
+                  constraints:
+                    nullable: true
+        - createIndex:
+            indexName:  idx_account_id_a
+            tableName:  table_a
+            clustered:  true
+            columns:
+              - column:
+                  name:  account_id
+            unique:  false

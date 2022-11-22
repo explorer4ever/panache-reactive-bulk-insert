@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Explorer4Ever
+      changes:
+        - insert:
+            tableName: table_a
+            columns:
+              - column:
+                  name: data
+                  value: "1"
+        - insert:
+            tableName: table_a
+            columns:
+              - column:
+                  name: data
+                  value: "2"

@@ -1,0 +1,77 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Explorer4Ever
+      changes:
+        - insert:
+            tableName: table_c
+            columns:
+              - column:
+                  name: bid
+                  value: 1
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "1.1.1"
+        - insert:
+            tableName: table_c
+            columns:
+              - column:
+                  name: bid
+                  value: 1
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "1.1.2"
+        - insert:
+            tableName: table_c
+            columns:
+              - column:
+                  name: bid
+                  value: 1
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "1.1.3"
+        - insert:
+            tableName: table_c
+            columns:
+              - column:
+                  name: bid
+                  value: 2
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "2.1.1"
+        - insert:
+            tableName: table_c
+            columns:
+              - column:
+                  name: bid
+                  value: 2
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "2.1.2"
+        - insert:
+            tableName: table_c
+            columns:
+              - column:
+                  name: bid
+                  value: 2
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "2.1.3"

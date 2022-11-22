@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Explorer4Ever
+      changes:
+        - insert:
+            tableName: table_b
+            columns:
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "1.1"
+        - insert:
+            tableName: table_b
+            columns:
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "1.2"
+        - insert:
+            tableName: table_b
+            columns:
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "1.3"
+        - insert:
+            tableName: table_b
+            columns:
+              - column:
+                  name: aid
+                  value: 2
+              - column:
+                  name: data
+                  value: "2.1"
+        - insert:
+            tableName: table_b
+            columns:
+              - column:
+                  name: aid
+                  value: 2
+              - column:
+                  name: data
+                  value: "2.2"
+        - insert:
+            tableName: table_b
+            columns:
+              - column:
+                  name: aid
+                  value: 2
+              - column:
+                  name: data
+                  value: "2.3"

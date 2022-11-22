@@ -1,0 +1,95 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Explorer4Ever
+      changes:
+        - insert:
+            tableName: table_d
+            columns:
+              - column:
+                  name: cid
+                  value: 1
+              - column:
+                  name: bid
+                  value: 1
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "1.1.1.1"
+        - insert:
+            tableName: table_d
+            columns:
+              - column:
+                  name: cid
+                  value: 1
+              - column:
+                  name: bid
+                  value: 1
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "2.1.1.1"
+        - insert:
+            tableName: table_d
+            columns:
+              - column:
+                  name: cid
+                  value: 1
+              - column:
+                  name: bid
+                  value: 1
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "3.1.1.1"
+        - insert:
+            tableName: table_d
+            columns:
+              - column:
+                  name: cid
+                  value: 2
+              - column:
+                  name: bid
+                  value: 1
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "4.1.1.1"
+        - insert:
+            tableName: table_d
+            columns:
+              - column:
+                  name: cid
+                  value: 2
+              - column:
+                  name: bid
+                  value: 1
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "2.2.1.1"
+        - insert:
+            tableName: table_d
+            columns:
+              - column:
+                  name: cid
+                  value: 2
+              - column:
+                  name: bid
+                  value: 1
+              - column:
+                  name: aid
+                  value: 1
+              - column:
+                  name: data
+                  value: "2.2.1.1"
