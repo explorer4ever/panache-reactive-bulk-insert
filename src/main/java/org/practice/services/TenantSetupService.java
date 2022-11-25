@@ -16,8 +16,10 @@ import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactiona
 import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
+import lombok.extern.slf4j.Slf4j;
 
 @RequestScoped
+@Slf4j
 public class TenantSetupService {
   private static final String ACCOUNT_ID_1 = "accountId=?1";
 
@@ -32,10 +34,14 @@ public class TenantSetupService {
           .list()
           .chain(
               genericTableAEntryEntities -> {
-                List<TableA> genericTableAEntries = genericTableAEntryEntities.stream()
-                    .map(TableA.class::cast).collect(Collectors.toList());
+                List<TableA> genericTableAEntries = genericTableAEntryEntities
+                    .stream()
+                    .map(TableA.class::cast)
+                    .collect(Collectors.toList());
                 return setupTableA(genericTableAEntries, accountId)
-                    .chain(actTableEntries -> Uni.createFrom().item(true));
+                    .chain(actTableEntries -> Uni
+                        .createFrom()
+                        .item(true));
               });
     });
   }
@@ -48,43 +54,66 @@ public class TenantSetupService {
       accountTableAEntry.setData(genericTableEntry.getData());
       accountTableAEntries.add(accountTableAEntry);
     }
-    return TableA.persist(accountTableAEntries).chain(done -> {
-      return TableA.find(ACCOUNT_ID_1, accountId).list()
-          .chain(
-              accountEntries -> {
-                List<TableA> actTableAEntries = accountEntries.stream()
-                    .map(TableA.class::cast)
-                    .collect(Collectors.toList());
-                return Uni.createFrom()
-                    .item(actTableAEntries)
-                    .onItem()
-                    .transformToMulti(
-                        actTableAEntry -> Multi.createFrom().iterable(actTableAEntry))
-                    .onItem()
-                    .transformToUniAndMerge(
-                        actTableAEntry -> {
-                          TableA genericTableAEntry = genericTableAEntries.stream().filter(
-                              genericTableA -> genericTableA.getData()
-                                  .equals(actTableAEntry.getData()))
-                              .findFirst().orElse(null);
-                          return TableB
-                              .find("accountId is NULL AND aid = ?1", genericTableAEntry.getId())
-                              .list().chain(genericTableBEntryEntities -> {
-                                List<TableB> genericTableBEntries = genericTableBEntryEntities.stream()
-                                    .map(TableB.class::cast)
-                                    .collect(Collectors.toList());
-                                return setupTableB(
-                                    genericTableBEntries, actTableAEntry, genericTableAEntry, accountId)
-                                    .onItem().transform(bSetupComplete -> actTableAEntry);
-                              });
-                        })
-                    .collect()
-                    .asList();
-              });
-    });
+    return TableA.persist(accountTableAEntries)
+        .onFailure().invoke(done -> log.info("Error persisting table A object"))
+        .onCancellation().invoke(() -> log.info("Error onCancellation of table A persist"))
+        .chain(done -> {
+          return TableA.find(ACCOUNT_ID_1, accountId).list()
+              .chain(
+                  accountEntries -> {
+                    List<TableA> actTableAEntries = accountEntries
+                        .stream()
+                        .map(TableA.class::cast)
+                        .collect(Collectors
+                            .toList());
+                    return Uni.createFrom()
+                        .item(actTableAEntries)
+                        .onItem()
+                        .transformToMulti(
+                            actTableAEntry -> Multi
+                                .createFrom()
+                                .iterable(actTableAEntry))
+                        .onItem()
+                        .transformToUniAndMerge(
+                            actTableAEntry -> {
+                              TableA genericTableAEntry = genericTableAEntries
+                                  .stream()
+                                  .filter(
+                                      genericTableA -> genericTableA
+                                          .getData()
+                                          .equals(actTableAEntry
+                                              .getData()))
+                                  .findFirst()
+                                  .orElse(null);
+                              return TableB
+                                  .find("accountId is NULL AND aid = ?1",
+                                      genericTableAEntry
+                                          .getId())
+                                  .list()
+                                  .chain(genericTableBEntryEntities -> {
+                                    List<TableB> genericTableBEntries = genericTableBEntryEntities
+                                        .stream()
+                                        .map(TableB.class::cast)
+                                        .collect(Collectors
+                                            .toList());
+                                    return setupTableB(
+                                        genericTableBEntries,
+                                        actTableAEntry,
+                                        genericTableAEntry,
+                                        accountId)
+                                        .onItem()
+                                        .transform(
+                                            bSetupComplete -> actTableAEntry);
+                                  });
+                            })
+                        .collect()
+                        .asList();
+                  });
+        });
   }
 
-  private Uni<Object> setupTableB(List<TableB> genericTableBEntries, TableA actTableAEntry, TableA genericTableAEntry,
+  private Uni<Object> setupTableB(List<TableB> genericTableBEntries, TableA actTableAEntry,
+      TableA genericTableAEntry,
       Integer accountId) {
     List<TableB> accountTableBEntries = new ArrayList<>();
     for (var genericTableEntry : genericTableBEntries) {
@@ -92,43 +121,68 @@ public class TenantSetupService {
       accountTableBEntry.setAccountId(accountId);
       accountTableBEntry.setData(genericTableEntry.getData());
       accountTableBEntry.setAid(actTableAEntry.getId());
+      log.info("Inserting B :{} ", accountTableBEntry);
       accountTableBEntries.add(accountTableBEntry);
     }
-    return TableB.persist(accountTableBEntries).chain(done -> {
-      return TableB.find(ACCOUNT_ID_1, accountId).list()
-          .chain(
-              accountEntries -> {
-                List<TableB> actTableBEntries = accountEntries.stream()
-                    .map(TableB.class::cast)
-                    .collect(Collectors.toList());
-                return Uni.createFrom()
-                    .item(actTableBEntries)
-                    .onItem()
-                    .transformToMulti(
-                        actTableBEntry -> Multi.createFrom().iterable(actTableBEntry))
-                    .onItem()
-                    .transformToUniAndMerge(
-                        actTableBEntry -> {
-                          TableB genericTableBEntry = genericTableBEntries.stream().filter(
-                              genericTableB -> genericTableB.getData()
-                                  .equals(actTableBEntry.getData()))
-                              .findFirst().orElse(null);
-                          return TableC
-                              .find("accountId is NULL AND bid = ?1",
-                                  genericTableBEntry.getId())
-                              .list()
-                              .chain(genericTableCEntryEntities -> {
-                                List<TableC> genericTableCEntries = genericTableCEntryEntities.stream()
-                                    .map(TableC.class::cast)
-                                    .collect(Collectors.toList());
-                                return setupTableC(
-                                    genericTableCEntries, actTableBEntry, genericTableBEntry, accountId);
-                              });
-                        })
-                    .collect()
-                    .asList();
-              });
-    });
+    return TableB.persist(accountTableBEntries)
+        .onFailure().invoke(e -> log.info("Error persisting table B object:{}", e.getMessage()))
+        .onCancellation().invoke(() -> log.info("Error onCancellation of table B persist"))
+        .chain(done -> {
+          return TableB.find("accountId=?1 AND aid=?2", accountId, actTableAEntry.getId()).list()
+              .chain(
+                  accountEntries -> {
+                    List<TableB> actTableBEntries = accountEntries
+                        .stream()
+                        .map(TableB.class::cast)
+                        .collect(Collectors
+                            .toList());
+                    return Uni.createFrom()
+                        .item(actTableBEntries)
+                        .onItem()
+                        .transformToMulti(
+                            actTableBEntry -> Multi
+                                .createFrom()
+                                .iterable(actTableBEntry))
+                        .onItem()
+                        .transformToUniAndMerge(
+                            actTableBEntry -> {
+                              log.info("*** Generic Table B Entries :{}",
+                                  genericTableBEntries);
+                              log.info("*** Account Table B Entry :{}",
+                                  actTableBEntry);
+                              TableB genericTableBEntry = genericTableBEntries
+                                  .stream()
+                                  .filter(
+                                      genericTableB -> genericTableB
+                                          .getData()
+                                          .equals(actTableBEntry
+                                              .getData()))
+                                  .findFirst()
+                                  .orElse(null);
+                              log.info("Generic Table Entry: {}",
+                                  genericTableBEntry);
+                              return TableC
+                                  .find("accountId is NULL AND bid = ?1",
+                                      genericTableBEntry
+                                          .getId())
+                                  .list()
+                                  .chain(genericTableCEntryEntities -> {
+                                    List<TableC> genericTableCEntries = genericTableCEntryEntities
+                                        .stream()
+                                        .map(TableC.class::cast)
+                                        .collect(Collectors
+                                            .toList());
+                                    return setupTableC(
+                                        genericTableCEntries,
+                                        actTableBEntry,
+                                        genericTableBEntry,
+                                        accountId);
+                                  });
+                            })
+                        .collect()
+                        .asList();
+                  });
+        });
 
   }
 
@@ -144,7 +198,7 @@ public class TenantSetupService {
       accountTableCEntries.add(accountTableCEntry);
     }
     return TableC.persist(accountTableCEntries).chain(done -> {
-      return TableC.find(ACCOUNT_ID_1, accountId).list()
+      return TableC.find("accountId=?1 AND bid=?2 ", accountId, actTableBEntry.getId()).list()
           .chain(
               accountEntries -> {
                 List<TableC> actTableCEntries = accountEntries.stream()
@@ -154,24 +208,37 @@ public class TenantSetupService {
                     .item(actTableCEntries)
                     .onItem()
                     .transformToMulti(
-                        actTableCEntry -> Multi.createFrom().iterable(actTableCEntry))
+                        actTableCEntry -> Multi
+                            .createFrom()
+                            .iterable(actTableCEntry))
                     .onItem()
                     .transformToUniAndMerge(
                         actTableCEntry -> {
-                          TableC genericTableCEntry = genericTableCEntries.stream().filter(
-                              genericTableC -> genericTableC.getData()
-                                  .equals(actTableCEntry.getData()))
-                              .findFirst().orElse(null);
+                          TableC genericTableCEntry = genericTableCEntries
+                              .stream()
+                              .filter(
+                                  genericTableC -> genericTableC
+                                      .getData()
+                                      .equals(actTableCEntry
+                                          .getData()))
+                              .findFirst()
+                              .orElse(null);
                           return TableD
                               .find("accountId is NULL AND cid = ?1",
-                                  genericTableCEntry.getId())
+                                  genericTableCEntry
+                                      .getId())
                               .list()
                               .chain(genericTableDEntryEntities -> {
-                                List<TableD> genericTableDEntries = genericTableDEntryEntities.stream()
+                                List<TableD> genericTableDEntries = genericTableDEntryEntities
+                                    .stream()
                                     .map(TableD.class::cast)
-                                    .collect(Collectors.toList());
+                                    .collect(Collectors
+                                        .toList());
                                 return setupTableD(
-                                    genericTableDEntries, actTableCEntry, genericTableCEntry, accountId);
+                                    genericTableDEntries,
+                                    actTableCEntry,
+                                    genericTableCEntry,
+                                    accountId);
                               });
                         })
                     .collect()

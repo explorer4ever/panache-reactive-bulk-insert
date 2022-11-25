@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
@@ -28,7 +29,8 @@ public class TableD extends PanacheEntityBase implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @SequenceGenerator(name = "dSequence", sequenceName = "table_d_id_seq", allocationSize = 1, initialValue = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dSequence")
   private Integer id;
 
   private Integer accountId;
